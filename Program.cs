@@ -14,5 +14,11 @@ newSession.EndTime = end;
 
 Console.WriteLine(newSession.SessionDuration);
 
+var ui = new UIManager(db);
+
+
+ui.MenuLoop();
+
+
 
 

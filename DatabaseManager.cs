@@ -1,15 +1,16 @@
 ﻿using System.Configuration;
 using Microsoft.Data.Sqlite;
+using System.Data.SQLite;
 
 namespace CodingTracker
 {
-    internal class DatabaseManager
+    public class DatabaseManager
     {
         string? ConnectionString = ConfigurationManager.AppSettings.Get("connectionString");
 
         public void CreateDatabase()
         {
-            using (var connection = new SqliteConnection(ConnectionString))
+            using (var connection = new SQLiteConnection(ConnectionString))
             {
                 using (var tableCommand = connection.CreateCommand())
                 {
@@ -22,6 +23,60 @@ namespace CodingTracker
                     Duration TEXT
                     )";
 
+                    tableCommand.ExecuteNonQuery();
+
+                    tableCommand.CommandText =
+                    @"CREATE TABLE IF NOT EXISTS ActiveSession (
+                    Active INTEGER PRIMARY KEY
+                    )";
+                    tableCommand.ExecuteNonQuery();
+
+                    // If ActiveSession table is empty, add 0 value for inactive session
+                    tableCommand.CommandText =
+                    @"INSERT INTO ActiveSession (Active)
+                    SELECT 0
+                    WHERE NOT EXISTS (SELECT * FROM ActiveSession)
+                    ";
+                    tableCommand.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public bool CheckForActiveSession()
+        {
+            using (var connection = new SQLiteConnection(ConnectionString))
+            {
+                string query = "SELECT Active FROM ActiveSession";
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    connection.Open();
+                    using SQLiteDataReader rdr = command.ExecuteReader();
+                    while (rdr.Read())
+                    {
+                        if (rdr.GetInt32(0) == 0) { return false; }
+                        else { return true; }
+                    }
+                    return false;
+                }
+            }
+        }
+
+        public void ToggleActiveSession()
+        {
+            int ValueToUpdate = 1;
+            if (CheckForActiveSession())
+            {
+                ValueToUpdate = 0;
+            }
+
+            using (var connection = new SQLiteConnection(ConnectionString))
+            {
+                using (var tableCommand = connection.CreateCommand())
+                {
+                    connection.Open();
+
+                    tableCommand.CommandText = "UPDATE ActiveSession SET Active = @Value";
+                    tableCommand.Parameters.AddWithValue("@Value", ValueToUpdate);
                     tableCommand.ExecuteNonQuery();
                 }
             }
