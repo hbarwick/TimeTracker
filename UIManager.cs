@@ -64,10 +64,12 @@ namespace CodingTracker
         {
             switch (intUserInput)
             {
-                case 0:
+                case 0: 
+                    // Exit Program
                     Console.WriteLine("Goodbye!");
                     break;
-                case 1:
+                case 1: 
+                    // Clock On/Off
                     if (!isSessionActive)
                     {
                         Console.WriteLine("New session started");
@@ -80,16 +82,31 @@ namespace CodingTracker
                     }
                     break;
                 case 2:
+                    // Enter new session
                     EnterNewSession();
                     break;
                 case 3:
+                    // Update session
                     Console.WriteLine("Update session...");
                     break;
                 case 4:
+                    // Delete session
                     Console.WriteLine("Delete session...");
                     break;
                 case 5:
+                    // View reports
                     Console.WriteLine("View Reports...");
+                    List<Session> sessionList = new();
+                    sessionList = db.RetrieveSessionList();
+                    Console.WriteLine(sessionList.Count);
+                    foreach(Session session in sessionList)
+                    {
+                        Console.WriteLine($"Id {session.Id}");
+                        Console.WriteLine($"Start time {session.StartTime}");
+                        Console.WriteLine($"End Time {session.EndTime}");
+                        Console.WriteLine($"Duration {session.Duration}");
+                    }
+
                     break;
             }
         }
@@ -97,6 +114,7 @@ namespace CodingTracker
         private void EndSession()
         {
             db.ToggleActiveSession();
+            db.UpdateSessionEndTime(DateTime.Now);
         }
 
         private void StartSession()

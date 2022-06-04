@@ -101,5 +101,69 @@ namespace CodingTracker
                 }
             }
         }
+
+        public List<Session> RetrieveSessionList()
+        {
+            List<Session> sessionList = new();
+
+            using (var connection = new SQLiteConnection(ConnectionString))
+            {
+                string query = "SELECT * FROM TimeTracker";
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    connection.Open();
+                    using SQLiteDataReader rdr = command.ExecuteReader();
+                    while (rdr.Read())
+                    {
+                        Session session = new Session();
+                        session.Id = rdr.GetInt32(0);
+                        session.StartTime = DateTime.Parse(rdr.GetString(1));
+                        if (!rdr.IsDBNull(2))
+                            session.EndTime = DateTime.Parse(rdr.GetString(2));
+                        else
+                            session.EndTime = null;
+
+                        sessionList.Add(session);
+                    }
+                }
+            }
+            return sessionList;
+        }
+
+        private int RetrieveActiveSessionId()
+        {
+            int id = 0;
+            using (var connection = new SQLiteConnection(ConnectionString))
+            {
+                string query = "SELECT Id FROM TimeTracker where EndTime IS NULL";
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    connection.Open();
+                    using SQLiteDataReader rdr = command.ExecuteReader();
+                    while (rdr.Read())
+                    {
+                        id = rdr.GetInt32(0);
+                    }
+                }
+            }
+            return id;
+        }
+
+        public void UpdateSessionEndTime(DateTime dt)
+        {
+            int id = RetrieveActiveSessionId();
+            using (var connection = new SQLiteConnection(ConnectionString))
+            {
+                using (var tableCommand = connection.CreateCommand())
+                {
+                    connection.Open();
+                    tableCommand.CommandText =
+                    @"UPDATE TimeTracker SET EndTime = @end WHERE Id = @id";
+                    tableCommand.Parameters.AddWithValue("@end", dt);
+                    tableCommand.Parameters.AddWithValue("@id", id);
+                    tableCommand.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }
