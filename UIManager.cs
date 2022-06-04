@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ConsoleTableExt;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -98,14 +99,17 @@ namespace CodingTracker
                     Console.WriteLine("View Reports...");
                     List<Session> sessionList = new();
                     sessionList = db.RetrieveSessionList();
-                    Console.WriteLine(sessionList.Count);
+                    var tableData = new List<List<object>>();
+
                     foreach(Session session in sessionList)
                     {
-                        Console.WriteLine($"Id {session.Id}");
-                        Console.WriteLine($"Start time {session.StartTime}");
-                        Console.WriteLine($"End Time {session.EndTime}");
-                        Console.WriteLine($"Duration {session.Duration}");
+                        tableData.Add(new List<object> { session.Id, session.StartTime, session.EndTime, session.Duration.ToString(@"hh\:mm\:ss") });
                     }
+                    Console.WriteLine(sessionList.Count);
+                    ConsoleTableExt.ConsoleTableBuilder
+                        .From(tableData)
+                        .WithColumn("Id", "Session Start", "Session End", "Duration")
+                        .ExportAndWriteLine();
 
                     break;
             }
