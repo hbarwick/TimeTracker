@@ -15,8 +15,10 @@ namespace CodingTracker
             this.db = db;
         }
 
-        internal string[] menuChoices = { "0", "1", "2", "3", "4", "5" };
-        internal void MainMenu()
+        private string[] menuChoices = { "0", "1", "2", "3", "4", "5" };
+        private string[] sessionMenuChoices = { "0", "1", "2"};
+
+        private void MainMenu()
         {
             Console.WriteLine("---------------------------");
             Console.WriteLine("         MAIN MENU         ");
@@ -34,19 +36,19 @@ namespace CodingTracker
             Console.Write("\nEnter option number: ");
         }
 
-        internal int GetUserInput(string[] choices)
+        private int GetUserInput(string[] choices, Action MenuToPrint)
         {
             string? userInput = string.Empty;
             while (!choices.Contains(userInput))
             {
-                MainMenu();
+                MenuToPrint();
                 userInput = Console.ReadLine();
             }
             int intUserInput = int.Parse(userInput);
             return intUserInput;
         }
 
-        internal void FunctionSelect(int intUserInput)
+        private void MainMenuFunctionSelect(int intUserInput)
         {
             switch (intUserInput)
             {
@@ -58,7 +60,7 @@ namespace CodingTracker
                     Console.WriteLine("Toggling session");
                     break;
                 case 2:
-                    Console.WriteLine("Enter new session...");
+                    EnterNewSession();
                     break;
                 case 3:
                     Console.WriteLine("Update session...");
@@ -78,9 +80,26 @@ namespace CodingTracker
             while (UserInput != 0)
             {
                 session = db.CheckForActiveSession();
-                UserInput = GetUserInput(menuChoices);
-                FunctionSelect(UserInput);
+                UserInput = GetUserInput(menuChoices, MainMenu);
+                MainMenuFunctionSelect(UserInput);
             }
+
+        }
+
+        private void EnterNewSessionMenu()
+        {
+            Console.WriteLine("---------------------------");
+            Console.WriteLine("        New Session        ");
+            Console.WriteLine("---------------------------\n");
+            Console.WriteLine("0 - Back to Main Menu");
+            Console.WriteLine("1 - Use today's date");
+            Console.WriteLine("2 - Enter date");
+            Console.Write("\nEnter option number: ");
+        }
+
+        private void EnterNewSession()
+        {
+            int input = GetUserInput(sessionMenuChoices, EnterNewSessionMenu);
 
         }
     }
