@@ -88,7 +88,6 @@ namespace CodingTracker
             {
                 using (var tableCommand = connection.CreateCommand())
                 {
-                    string start = session.StartTime.ToString();
                     connection.Open();
                     tableCommand.CommandText =
                     @"INSERT INTO TimeTracker (StartTime, EndTime, Duration)
