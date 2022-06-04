@@ -1,0 +1,4 @@
+﻿
+
+Unit Tests
+If Endtime = Null, Session should be Active

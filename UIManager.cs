@@ -8,15 +8,27 @@ namespace CodingTracker
 {
     public class UIManager
     {
-        public bool session;
+        public bool isSessionActive;
         public DatabaseManager db;
         public UIManager(DatabaseManager db)
         {
             this.db = db;
         }
 
+        public void MenuLoop()
+        {
+            int UserInput = 1;
+            while (UserInput != 0)
+            {
+                isSessionActive = db.CheckForActiveSession();
+                UserInput = GetUserInput(menuChoices, MainMenu);
+                MainMenuFunctionSelect(UserInput);
+            }
+
+        }
+
         private string[] menuChoices = { "0", "1", "2", "3", "4", "5" };
-        private string[] sessionMenuChoices = { "0", "1", "2"};
+        private string[] sessionMenuChoices = { "0", "1", "2" };
 
         private void MainMenu()
         {
@@ -25,7 +37,7 @@ namespace CodingTracker
             Console.WriteLine("---------------------------\n");
 
             Console.WriteLine("0 - Exit Application");
-            if (!session)
+            if (!isSessionActive)
                 Console.WriteLine("1 - Clock On");
             else
                 Console.WriteLine("1 - Clock Off");
@@ -74,17 +86,6 @@ namespace CodingTracker
             }
         }
 
-        public void MenuLoop()
-        {
-            int UserInput = 1;
-            while (UserInput != 0)
-            {
-                session = db.CheckForActiveSession();
-                UserInput = GetUserInput(menuChoices, MainMenu);
-                MainMenuFunctionSelect(UserInput);
-            }
-
-        }
 
         private void EnterNewSessionMenu()
         {
@@ -100,7 +101,39 @@ namespace CodingTracker
         private void EnterNewSession()
         {
             int input = GetUserInput(sessionMenuChoices, EnterNewSessionMenu);
+            NewSessionFunctionSelect(input);
 
         }
+
+        private void NewSessionFunctionSelect(int intUserInput)
+        {
+            switch (intUserInput)
+            {
+                case 0:
+                    break;
+                case 1:
+                    Console.WriteLine("Using today's date");
+                    break;
+                case 2:
+                    //DateTime date = DateOperations.EnterNewDate();
+                    BuildNewSession(DateOperations.EnterNewDate);
+                    //Console.WriteLine($"You entered {date}");
+                    break;
+            }
+        }
+
+        private Session BuildNewSession(Func<String> GetDate)
+        {
+            Session newSession = new();
+            string Date = GetDate();
+            string Time = DateOperations.EnterNewTime();
+
+            Console.WriteLine($"{Date} + {Time}");
+
+            DateTime dateTime = DateOperations.ParseDateTime(Date, Time);
+            Console.WriteLine(dateTime);
+            return newSession;
+        }
+
     }
 }
