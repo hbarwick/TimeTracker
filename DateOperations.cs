@@ -43,5 +43,13 @@ namespace CodingTracker
             DateTime parsedDt = DateTime.Parse(dt);
             return parsedDt;
         }
+
+        public static string GetTodaysDate()
+        {
+            Console.WriteLine("Getting today's date....");
+            DateTime dateTime = DateTime.Now;
+            string date = dateTime.ToShortDateString();
+            return date;
+        }
     }
 }

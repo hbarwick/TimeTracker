@@ -12,7 +12,7 @@ DateTime end = DateTime.Now;
 newSession.StartTime = start;
 newSession.EndTime = end;
 
-Console.WriteLine(newSession.SessionDuration);
+Console.WriteLine(newSession.Duration);
 
 var ui = new UIManager(db);
 

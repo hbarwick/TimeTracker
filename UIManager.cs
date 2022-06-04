@@ -70,6 +70,7 @@ namespace CodingTracker
                 case 1:
                     db.ToggleActiveSession();
                     Console.WriteLine("Toggling session");
+                    StartSession();
                     break;
                 case 2:
                     EnterNewSession();
@@ -86,6 +87,10 @@ namespace CodingTracker
             }
         }
 
+        private void StartSession()
+        {
+            throw new NotImplementedException();
+        }
 
         private void EnterNewSessionMenu()
         {
@@ -112,26 +117,30 @@ namespace CodingTracker
                 case 0:
                     break;
                 case 1:
-                    Console.WriteLine("Using today's date");
+                    BuildNewSession(DateOperations.GetTodaysDate);
                     break;
                 case 2:
-                    //DateTime date = DateOperations.EnterNewDate();
                     BuildNewSession(DateOperations.EnterNewDate);
-                    //Console.WriteLine($"You entered {date}");
                     break;
             }
         }
 
+        
+
         private Session BuildNewSession(Func<String> GetDate)
         {
             Session newSession = new();
-            string Date = GetDate();
-            string Time = DateOperations.EnterNewTime();
+            string date = GetDate();
+            Console.WriteLine($"Date Entered: {date}");
+            string startTime = DateOperations.EnterNewTime();
+            Console.WriteLine("Enter Session end time.");
+            string endTime = DateOperations.EnterNewTime();
 
-            Console.WriteLine($"{Date} + {Time}");
+            newSession.StartTime = DateOperations.ParseDateTime(date, startTime);
+            newSession.EndTime = DateOperations.ParseDateTime(date, endTime);
 
-            DateTime dateTime = DateOperations.ParseDateTime(Date, Time);
-            Console.WriteLine(dateTime);
+            db.WriteSessionToDatabase(newSession);
+
             return newSession;
         }
 
