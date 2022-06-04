@@ -81,5 +81,25 @@ namespace CodingTracker
                 }
             }
         }
+
+        public void WriteSessionToDatabase(Session session)
+        {
+            using (var connection = new SQLiteConnection(ConnectionString))
+            {
+                using (var tableCommand = connection.CreateCommand())
+                {
+                    connection.Open();
+                    tableCommand.CommandText =
+                    @"INSERT INTO TimeTracker (StartTime, EndTime, Duration)
+                    Values (@StartTime, @EndTime, @Duration)
+                    ";
+
+                    tableCommand.Parameters.AddWithValue("@StartTime", session.StartTime);
+                    tableCommand.Parameters.AddWithValue("@EndTime", session.EndTime);
+                    tableCommand.Parameters.AddWithValue("@Duration", session.Duration);
+                    tableCommand.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }
