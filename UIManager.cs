@@ -68,9 +68,16 @@ namespace CodingTracker
                     Console.WriteLine("Goodbye!");
                     break;
                 case 1:
-                    db.ToggleActiveSession();
-                    Console.WriteLine("Toggling session");
-                    StartSession();
+                    if (!isSessionActive)
+                    {
+                        Console.WriteLine("New session started");
+                        StartSession();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Session Ended");
+                        EndSession();
+                    }
                     break;
                 case 2:
                     EnterNewSession();
@@ -87,9 +94,17 @@ namespace CodingTracker
             }
         }
 
+        private void EndSession()
+        {
+            db.ToggleActiveSession();
+        }
+
         private void StartSession()
         {
-            throw new NotImplementedException();
+            Session newSession = new();
+            newSession.StartTime = DateTime.Now;
+            db.WriteSessionToDatabase(newSession);
+            db.ToggleActiveSession();
         }
 
         private void EnterNewSessionMenu()
