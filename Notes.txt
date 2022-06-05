@@ -2,3 +2,10 @@
 
 Unit Tests
 If Endtime = Null, Session should be Active
+
+Reports
+
+1 - Total hours logged all time
+2 - Total hours last 7 days
+3 - Total hours this calendar month
+4 - Total hours last calendar month

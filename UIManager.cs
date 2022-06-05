@@ -126,7 +126,7 @@
         private void DisplayActiveSessions()
         {
             Console.WriteLine("\nSESSION LIST");
-            ReportGeneration.DisplayAllRecords(db.RetrieveSessionList());
+            Reports.DisplayAllRecords(db.RetrieveSessionList());
             Console.Write("\nEnter Id of session, or 0 to return to Main Menu: ");
         }
 

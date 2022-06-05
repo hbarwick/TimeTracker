@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CodingTracker
 {
-    public class ReportGeneration
+    public class Reports
     {
         public static void DisplayAllRecords(List<Session> sessionList)
         {

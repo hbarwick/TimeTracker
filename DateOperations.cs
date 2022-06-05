@@ -20,7 +20,6 @@ namespace CodingTracker
             }
             string shortDate = Date.ToShortDateString();
             return shortDate;
-
         }
 
         public static string EnterNewTime()
