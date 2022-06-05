@@ -1,6 +1,4 @@
-﻿using ConsoleTableExt;
-
-namespace CodingTracker
+﻿namespace CodingTracker
 {
     public class UIManager
     {
@@ -87,27 +85,33 @@ namespace CodingTracker
                     break;
                 case 4:
                     // Delete session
-                    Console.WriteLine("Delete session...");
+                    DeleteSession();
                     break;
                 case 5:
                     // View reports
                     Console.WriteLine("View Reports...");
-                    List<Session> sessionList = new();
-                    sessionList = db.RetrieveSessionList();
-                    var tableData = new List<List<object>>();
 
-                    foreach(Session session in sessionList)
-                    {
-                        tableData.Add(new List<object> { session.Id, session.StartTime, session.EndTime, session.Duration.ToString(@"hh\:mm\:ss") });
-                    }
-                    Console.WriteLine(sessionList.Count);
-                    ConsoleTableExt.ConsoleTableBuilder
-                        .From(tableData)
-                        .WithColumn("Id", "Session Start", "Session End", "Duration")
-                        .ExportAndWriteLine();
 
                     break;
             }
+        }
+
+        private void DeleteSession()
+        {
+            int id = GetUserInput(db.GetArrayOfIdsAsStrings(), DisplayActiveSessions);
+            if (id != 0)
+            {
+                db.DeleteSession(id);
+                Console.Write($"Session {id} deleted. Press enter to return to Main Menu. ");
+                Console.ReadLine();
+            }
+        }
+
+        private void DisplayActiveSessions()
+        {
+            Console.WriteLine("\nSESSION LIST");
+            ReportGeneration.DisplayAllRecords(db.RetrieveSessionList());
+            Console.Write("\nEnter Id of session, or 0 to return to Main Menu: ");
         }
 
         private void EndSession()

@@ -165,5 +165,73 @@ namespace CodingTracker
                 }
             }
         }
+
+        /// <summary>
+        /// Method <c>DeleteSession</c> Deletes the row from TimeTracker of given int Id.
+        /// </summary>
+        public void DeleteSession(int id)
+        {
+            using (var connection = new SQLiteConnection(ConnectionString))
+            {
+                using (var tableCommand = connection.CreateCommand())
+                {
+                    connection.Open();
+                    tableCommand.CommandText =
+                    @"DELETE FROM TimeTracker WHERE Id = @id";
+                    tableCommand.Parameters.AddWithValue("@id", id);
+                    tableCommand.ExecuteNonQuery();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Method <c>UpdateSession</c> Updates a row from TimeTracker of given int Id
+        /// with column passed in by string columnToupdate, updated to Datetime value dt.
+        /// </summary>
+        public void UpdateSession(int Id, string columnToUpdate, DateTime dt)
+        {
+            int id = RetrieveActiveSessionId();
+            using (var connection = new SQLiteConnection(ConnectionString))
+            {
+                using (var tableCommand = connection.CreateCommand())
+                {
+                    connection.Open();
+                    tableCommand.CommandText =
+                    @"UPDATE TimeTracker SET @columnToUpdate = @dt WHERE Id = @id";
+                    tableCommand.Parameters.AddWithValue("@id", id);
+                    tableCommand.Parameters.AddWithValue("@columnToUpdate", columnToUpdate);
+                    tableCommand.Parameters.AddWithValue("@dt", dt);
+                    tableCommand.ExecuteNonQuery();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Method <c>GetArrayOfIdsAsStrings</c> Selects all Integer IDs from the database and converts 
+        /// to string array to be in correct format for UIManager's GetUserInput method.
+        /// </summary>
+        public string[] GetArrayOfIdsAsStrings()
+        {
+
+            List<string> ids = new();
+            using (var connection = new SQLiteConnection(ConnectionString))
+            {
+                string query = "SELECT Id from TimeTracker";
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    connection.Open();
+                    using SQLiteDataReader rdr = command.ExecuteReader();
+                    while (rdr.Read())
+                    {
+                        int intid = rdr.GetInt32(0);
+                        string id = intid.ToString();
+                        ids.Add(id);
+                    }
+                }
+            }
+            // Add 0 to the array as that is the valid menu choice for exiting update/delete option.
+            ids.Add("0");
+            return ids.ToArray();
+        }
     }
 }
