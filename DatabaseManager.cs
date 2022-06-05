@@ -130,7 +130,7 @@ namespace CodingTracker
             return sessionList;
         }
 
-        private int RetrieveActiveSessionId()
+        public int RetrieveActiveSessionId()
         {
             int id = 0;
             using (var connection = new SQLiteConnection(ConnectionString))
@@ -147,23 +147,6 @@ namespace CodingTracker
                 }
             }
             return id;
-        }
-
-        public void UpdateSessionEndTime(DateTime dt)
-        {
-            int id = RetrieveActiveSessionId();
-            using (var connection = new SQLiteConnection(ConnectionString))
-            {
-                using (var tableCommand = connection.CreateCommand())
-                {
-                    connection.Open();
-                    tableCommand.CommandText =
-                    @"UPDATE TimeTracker SET EndTime = @end WHERE Id = @id";
-                    tableCommand.Parameters.AddWithValue("@end", dt);
-                    tableCommand.Parameters.AddWithValue("@id", id);
-                    tableCommand.ExecuteNonQuery();
-                }
-            }
         }
 
         /// <summary>
@@ -185,21 +168,29 @@ namespace CodingTracker
         }
 
         /// <summary>
-        /// Method <c>UpdateSession</c> Updates a row from TimeTracker of given int Id
-        /// with column passed in by string columnToupdate, updated to Datetime value dt.
+        /// Method <c>UpdateSession</c> Updates a row from TimeTracker of given int Id.
+        /// Pass col=1 to update StartTime, col=2 to update endtime. Value updated to Datetime value dt.
         /// </summary>
-        public void UpdateSession(int Id, string columnToUpdate, DateTime dt)
+        public void UpdateSession(int id, int col, DateTime dt)
         {
-            int id = RetrieveActiveSessionId();
+            string sql = string.Empty;
+            switch (col)
+            {
+                case 1:
+                    sql = @"UPDATE TimeTracker SET StartTime = @dt WHERE Id = @id";
+                    break;
+                case 2:
+                    sql = @"UPDATE TimeTracker SET EndTime = @dt WHERE Id = @id";
+                    break;
+            }
             using (var connection = new SQLiteConnection(ConnectionString))
             {
                 using (var tableCommand = connection.CreateCommand())
                 {
                     connection.Open();
-                    tableCommand.CommandText =
-                    @"UPDATE TimeTracker SET @columnToUpdate = @dt WHERE Id = @id";
+                    tableCommand.CommandText = sql;
                     tableCommand.Parameters.AddWithValue("@id", id);
-                    tableCommand.Parameters.AddWithValue("@columnToUpdate", columnToUpdate);
+                    //tableCommand.Parameters.AddWithValue("@columnToUpdate", columnToUpdate);
                     tableCommand.Parameters.AddWithValue("@dt", dt);
                     tableCommand.ExecuteNonQuery();
                 }

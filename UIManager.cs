@@ -81,7 +81,7 @@
                     break;
                 case 3:
                     // Update session
-                    Console.WriteLine("Update session...");
+                    UpdateSession();
                     break;
                 case 4:
                     // Delete session
@@ -107,6 +107,22 @@
             }
         }
 
+        private void UpdateSession()
+        {
+            int id = GetUserInput(db.GetArrayOfIdsAsStrings(), DisplayActiveSessions);
+            if (id != 0)
+            {
+                int updateChoice = GetUserInput(sessionMenuChoices, UpdateSessionMenu);
+                string date = DateOperations.EnterNewDate();
+                string time = DateOperations.EnterNewTime();
+                DateTime dt = DateOperations.ParseDateTime(date, time);
+
+                db.UpdateSession(id, updateChoice, dt);
+                Console.Write($"Session {id} updated. Press enter to return to Main Menu. ");
+                Console.ReadLine();
+            }
+        }
+
         private void DisplayActiveSessions()
         {
             Console.WriteLine("\nSESSION LIST");
@@ -117,7 +133,7 @@
         private void EndSession()
         {
             db.ToggleActiveSession();
-            db.UpdateSessionEndTime(DateTime.Now);
+            db.UpdateSession(db.RetrieveActiveSessionId(), 2, DateTime.Now);
         }
 
         private void StartSession()
@@ -136,6 +152,17 @@
             Console.WriteLine("0 - Back to Main Menu");
             Console.WriteLine("1 - Use today's date");
             Console.WriteLine("2 - Enter date");
+            Console.Write("\nEnter option number: ");
+        }
+
+        private void UpdateSessionMenu()
+        {
+            Console.WriteLine("---------------------------");
+            Console.WriteLine("        Update Session     ");
+            Console.WriteLine("---------------------------\n");
+            Console.WriteLine("0 - Back to Main Menu");
+            Console.WriteLine("1 - Update Starting Date/Time");
+            Console.WriteLine("2 - Update Ending Date/Time");
             Console.Write("\nEnter option number: ");
         }
 
