@@ -102,16 +102,17 @@ namespace CodingTracker
             }
         }
 
-        public List<Session> RetrieveSessionList()
+        public List<Session> RetrieveSessionList(int limit)
         {
             List<Session> sessionList = new();
 
             using (var connection = new SQLiteConnection(ConnectionString))
             {
-                string query = "SELECT * FROM TimeTracker";
+                string query = "SELECT * FROM TimeTracker ORDER by Id Desc LIMIT @limit";
                 using (var command = new SQLiteCommand(query, connection))
                 {
                     connection.Open();
+                    command.Parameters.AddWithValue("@limit", limit);
                     using SQLiteDataReader rdr = command.ExecuteReader();
                     while (rdr.Read())
                     {
@@ -130,7 +131,45 @@ namespace CodingTracker
             return sessionList;
         }
 
-        public int RetrieveActiveSessionId()
+        /// <summary>
+        /// Method <c>RetrieveAndUpdateSession</c> Called when manual changes are made to start/end times
+        /// or when shift is clocked off. Retrieves updated start and end times into a new Session,
+        /// then updates the duration column of the row with the auto calculated session duration property.
+        /// </summary>
+        public void RetrieveAndUpdateSession(int id)
+        {
+            Session session = new();
+            using (var connection = new SQLiteConnection(ConnectionString))
+            {
+                connection.Open();
+                string query = "SELECT * FROM TimeTracker WHERE Id = @id";
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    
+                    command.Parameters.AddWithValue("@id", id);
+                    using SQLiteDataReader rdr = command.ExecuteReader();
+                    while (rdr.Read())
+                    {
+                        session.Id = rdr.GetInt32(0);
+                        session.StartTime = DateTime.Parse(rdr.GetString(1));
+                        if (!rdr.IsDBNull(2))
+                            session.EndTime = DateTime.Parse(rdr.GetString(2));
+                        else
+                            session.EndTime = null;
+                    }
+                }
+                using (var tableCommand = connection.CreateCommand())
+                {
+                    tableCommand.CommandText = "UPDATE TimeTracker SET Duration = @Duration WHERE Id = @Id";
+                    tableCommand.Parameters.AddWithValue("@Duration", session.Duration);
+                    tableCommand.Parameters.AddWithValue("@Id", id);
+                    tableCommand.ExecuteNonQuery();
+                }
+            }
+        }
+
+
+            public int RetrieveActiveSessionId()
         {
             int id = 0;
             using (var connection = new SQLiteConnection(ConnectionString))

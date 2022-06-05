@@ -21,6 +21,7 @@
 
         }
 
+        // Available choices for each menu type
         private string[] menuChoices = { "0", "1", "2", "3", "4", "5" };
         private string[] sessionMenuChoices = { "0", "1", "2" };
 
@@ -42,6 +43,47 @@
             Console.Write("\nEnter option number: ");
         }
 
+        private void EnterNewSessionMenu()
+        {
+            Console.WriteLine("---------------------------");
+            Console.WriteLine("        New Session        ");
+            Console.WriteLine("---------------------------\n");
+            Console.WriteLine("0 - Back to Main Menu");
+            Console.WriteLine("1 - Use today's date");
+            Console.WriteLine("2 - Enter date");
+            Console.Write("\nEnter option number: ");
+        }
+
+        private void UpdateSessionMenu()
+        {
+            Console.WriteLine("---------------------------");
+            Console.WriteLine("        Update Session     ");
+            Console.WriteLine("---------------------------\n");
+            Console.WriteLine("0 - Back to Main Menu");
+            Console.WriteLine("1 - Update Starting Date/Time");
+            Console.WriteLine("2 - Update Ending Date/Time");
+            Console.Write("\nEnter option number: ");
+        }
+
+        private void ReportsMenu()
+        {
+            Console.WriteLine("---------------------------");
+            Console.WriteLine("          Reports          ");
+            Console.WriteLine("---------------------------\n");
+            Console.WriteLine("0 - Back to Main Menu");
+            Console.WriteLine("1 - View entire session history");
+            Console.WriteLine("2 - Total hours - All Time");
+            Console.WriteLine("3 - Total hours - Last 7 days");
+            Console.WriteLine("4 - Total hours - This calendar month");
+            Console.WriteLine("5 - Total hours - Last calendar month");
+            Console.Write("\nEnter option number: ");
+        }
+
+        /// <summary>
+        /// Method <c>GetUserInput</c> Gets user input. Takes a string array of potential choices and Action delegate
+        /// containing the menu to display. Will reprint the menu if an invalid user entry provided, .
+        /// Returns user choice as an Integer.
+        /// </summary>
         private int GetUserInput(string[] choices, Action MenuToPrint)
         {
             string? userInput = string.Empty;
@@ -76,21 +118,42 @@
                     }
                     break;
                 case 2:
-                    // Enter new session
                     EnterNewSession();
                     break;
                 case 3:
-                    // Update session
                     UpdateSession();
                     break;
                 case 4:
-                    // Delete session
                     DeleteSession();
                     break;
                 case 5:
-                    // View reports
-                    Console.WriteLine("View Reports...");
+                    ViewReports();
+                    break;
+            }
+        }
 
+        private void ViewReports()
+        {
+            int input = GetUserInput(menuChoices, ReportsMenu);
+            switch (input)
+            {
+                case 0:
+                    // Back to Main Menu
+                    break;
+                case 1:
+
+                    break;
+                case 2:
+
+                    break;
+                case 3:
+
+
+                    break;
+                case 4:
+
+                    break;
+                case 5:
 
                     break;
             }
@@ -118,6 +181,7 @@
                 DateTime dt = DateOperations.ParseDateTime(date, time);
 
                 db.UpdateSession(id, updateChoice, dt);
+                db.RetrieveAndUpdateSession(id);
                 Console.Write($"Session {id} updated. Press enter to return to Main Menu. ");
                 Console.ReadLine();
             }
@@ -126,14 +190,17 @@
         private void DisplayActiveSessions()
         {
             Console.WriteLine("\nSESSION LIST");
-            Reports.DisplayAllRecords(db.RetrieveSessionList());
+            Reports.DisplayAllRecords(db.RetrieveSessionList(20));
             Console.Write("\nEnter Id of session, or 0 to return to Main Menu: ");
         }
 
         private void EndSession()
         {
             db.ToggleActiveSession();
-            db.UpdateSession(db.RetrieveActiveSessionId(), 2, DateTime.Now);
+            int ActiveSession = db.RetrieveActiveSessionId();
+            db.UpdateSession(ActiveSession, 2, DateTime.Now);
+            db.RetrieveAndUpdateSession(ActiveSession);
+
         }
 
         private void StartSession()
@@ -142,28 +209,6 @@
             newSession.StartTime = DateTime.Now;
             db.WriteSessionToDatabase(newSession);
             db.ToggleActiveSession();
-        }
-
-        private void EnterNewSessionMenu()
-        {
-            Console.WriteLine("---------------------------");
-            Console.WriteLine("        New Session        ");
-            Console.WriteLine("---------------------------\n");
-            Console.WriteLine("0 - Back to Main Menu");
-            Console.WriteLine("1 - Use today's date");
-            Console.WriteLine("2 - Enter date");
-            Console.Write("\nEnter option number: ");
-        }
-
-        private void UpdateSessionMenu()
-        {
-            Console.WriteLine("---------------------------");
-            Console.WriteLine("        Update Session     ");
-            Console.WriteLine("---------------------------\n");
-            Console.WriteLine("0 - Back to Main Menu");
-            Console.WriteLine("1 - Update Starting Date/Time");
-            Console.WriteLine("2 - Update Ending Date/Time");
-            Console.Write("\nEnter option number: ");
         }
 
         private void EnterNewSession()
@@ -188,6 +233,11 @@
             }
         }
 
+        /// <summary>
+        /// Method <c>BuildNewSession</c> Creates a new timed session.
+        /// Uses Func delegate to either aquire the date from Datetime.Now or from user entered date.
+        /// Uses DateOperations helper methods to join strings together and parse as DateTimes.
+        /// </summary>
         private Session BuildNewSession(Func<String> GetDate)
         {
             Session newSession = new();
