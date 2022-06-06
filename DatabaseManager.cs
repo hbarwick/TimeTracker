@@ -8,6 +8,7 @@ namespace CodingTracker
     {
         string? ConnectionString = ConfigurationManager.AppSettings.Get("connectionString");
 
+
         public void CreateDatabase()
         {
             using (var connection = new SQLiteConnection(ConnectionString))
@@ -102,10 +103,13 @@ namespace CodingTracker
             }
         }
 
-        public List<Session> RetrieveSessionList(int limit)
+        /// <summary>
+        /// Method <c>RetrieveSessionList</c> Retrieves a List of all Sessions from the database.
+        /// Optional limit parameter can apply a limit to the number of results returned.
+        /// (Default 10000 value to be higher number than this db ever expected to store)
+        /// </summary>
+        public List<Session> RetrieveSessionList(int limit = 10000)
         {
-            List<Session> sessionList = new();
-
             using (var connection = new SQLiteConnection(ConnectionString))
             {
                 string query = "SELECT * FROM TimeTracker ORDER by Id Desc LIMIT @limit";
@@ -113,23 +117,75 @@ namespace CodingTracker
                 {
                     connection.Open();
                     command.Parameters.AddWithValue("@limit", limit);
-                    using SQLiteDataReader rdr = command.ExecuteReader();
-                    while (rdr.Read())
-                    {
-                        Session session = new Session();
-                        session.Id = rdr.GetInt32(0);
-                        session.StartTime = DateTime.Parse(rdr.GetString(1));
-                        if (!rdr.IsDBNull(2))
-                            session.EndTime = DateTime.Parse(rdr.GetString(2));
-                        else
-                            session.EndTime = null;
-
-                        sessionList.Add(session);
-                    }
+                    List<Session> sessionList = ExecuteDataReader(command);
+                    return sessionList;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Method <c>RetrieveSessionListByDate</c> Retrieves a List of sessions from the database
+        /// with start dates greater or equal than <paramref name="date"/>
+        /// </summary>
+        public List<Session> RetrieveSessionListByDate(DateTime date)
+        {
+            using (var connection = new SQLiteConnection(ConnectionString))
+            {
+                string query = "SELECT * FROM TimeTracker WHERE StartTime >= @date";
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    connection.Open();
+                    command.Parameters.AddWithValue("@date", date);
+                    List<Session> sessionList = ExecuteDataReader(command);
+                    return sessionList;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Method <c>RetrieveSessionListByDate</c> Retrieves a List of sessions from the database
+        /// with start dates greater or equal than <paramref name="date1"/> 
+        /// and lesser or equal than <paramref name="date2"/>
+        /// </summary>
+        public List<Session> RetrieveSessionListByDateRange(DateTime date1, DateTime date2)
+        {
+            using (var connection = new SQLiteConnection(ConnectionString))
+            {
+                string query = "SELECT * FROM TimeTracker WHERE StartTime >= @date1 and StartTime <= @date2";
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    connection.Open();
+                    command.Parameters.AddWithValue("@date1", date1);
+                    command.Parameters.AddWithValue("@date2", date2);
+                    List<Session> sessionList = ExecuteDataReader(command);
+                    return sessionList;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Method <c>ExecuteDataReader</c> Exectutes the SQLite <paramref name="command"/>'s 
+        /// ExecuteReader method, returning a list of Sessions.
+        /// </summary>
+        private List<Session> ExecuteDataReader(SQLiteCommand command)
+        {
+            List<Session> sessionList = new();
+            using SQLiteDataReader rdr = command.ExecuteReader();
+            while (rdr.Read())
+            {
+                Session session = new Session();
+                session.Id = rdr.GetInt32(0);
+                session.StartTime = DateTime.Parse(rdr.GetString(1));
+                // Null check for endtime as active session will have this field null so cannot parse to string
+                if (!rdr.IsDBNull(2))
+                    session.EndTime = DateTime.Parse(rdr.GetString(2));
+                else
+                    session.EndTime = null;
+                sessionList.Add(session);
             }
             return sessionList;
         }
+
 
         /// <summary>
         /// Method <c>RetrieveAndUpdateSession</c> Called when manual changes are made to start/end times
@@ -169,7 +225,11 @@ namespace CodingTracker
         }
 
 
-            public int RetrieveActiveSessionId()
+        /// <summary>
+        /// Method <c>RetrieveActiveSessionId</c> Retrieves the integer ID of the active session,
+        /// that being the session with NULL end time.
+        /// </summary>
+        public int RetrieveActiveSessionId()
         {
             int id = 0;
             using (var connection = new SQLiteConnection(ConnectionString))

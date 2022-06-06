@@ -134,27 +134,45 @@
 
         private void ViewReports()
         {
+            TimeSpan total = TimeSpan.Zero;
             int input = GetUserInput(menuChoices, ReportsMenu);
             switch (input)
             {
+                
                 case 0:
                     // Back to Main Menu
                     break;
                 case 1:
-
+                    // Display total session history
+                    Reports.DisplayAllRecords(db.RetrieveSessionList());
+                    ViewReports();
                     break;
                 case 2:
-
+                    // Print total hours logged all time
+                    total = Reports.TotalHoursReport(db.RetrieveSessionList());
+                    Console.WriteLine($"\n\nTotal time logged - All Time: {total}\n\n");
+                    ViewReports();
                     break;
                 case 3:
-
-
+                    // Print total hours logged last 7 days
+                    DateTime sevenDays = DateTime.Now.AddDays(-7);
+                    total = Reports.TotalHoursReport(db.RetrieveSessionListByDate(sevenDays));
+                    Console.WriteLine($"\n\nTotal time logged - Last 7 Days: {total}\n\n");
+                    ViewReports();
                     break;
                 case 4:
-
+                    // Print total hours logged this month
+                    (DateTime first, DateTime last) = DateOperations.GetFirstAndLastOfMonth();
+                    total = Reports.TotalHoursReport(db.RetrieveSessionListByDateRange(first, last));
+                    Console.WriteLine($"\n\nTotal time logged - Current Month: {total}\n\n");
+                    ViewReports();
                     break;
                 case 5:
-
+                    // Print total hours logged last month
+                    (first, last) = DateOperations.GetFirstAndLastOfMonth(1);
+                    total = Reports.TotalHoursReport(db.RetrieveSessionListByDateRange(first, last));
+                    Console.WriteLine($"\n\nTotal time logged - Last Month: {total}\n\n");
+                    ViewReports();
                     break;
             }
         }

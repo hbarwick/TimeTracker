@@ -50,5 +50,14 @@ namespace CodingTracker
             string date = dateTime.ToShortDateString();
             return date;
         }
+
+        public static (DateTime, DateTime) GetFirstAndLastOfMonth(int current = 0)
+        {
+            int currentMonth = DateTime.Now.Month - current;
+            int currentYear = DateTime.Now.Year;
+            var firstOfMonth = new DateTime(currentYear, currentMonth, 1);
+            var lastOfMonth = firstOfMonth.AddMonths(1).AddSeconds(-1);
+            return (firstOfMonth, lastOfMonth);
+        }
     }
 }

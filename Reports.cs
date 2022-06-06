@@ -24,5 +24,21 @@ namespace CodingTracker
                 .ExportAndWriteLine();
         }
 
+        public static TimeSpan TotalHoursReport(List<Session> sessionList)
+        {
+            TimeSpan total = TimeSpan.Zero;
+
+            foreach (Session session in sessionList)
+            {
+                total += session.Duration;
+            }
+            TimeSpan cleanTotal = RemoveMilliseconds(total);
+            return cleanTotal;
+        }
+
+        public static TimeSpan RemoveMilliseconds(TimeSpan time)
+        {
+            return new TimeSpan(time.Days, time.Hours, time.Minutes, time.Seconds);
+        }
     }
 }
