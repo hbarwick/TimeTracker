@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CodingTracker
+﻿namespace CodingTracker
 {
+    /// <summary>
+    /// Class <c>Session</c> models a session of time. Supply with DateTime <value name="StartTime"/> and <value name="EndTime"/>,
+    /// Timespan <value name="Duration"/> will be auto calculated.
+    /// </summary>
     public class Session
     {
         public int Id { get; set; }

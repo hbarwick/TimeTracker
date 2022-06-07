@@ -218,7 +218,6 @@
             int ActiveSession = db.RetrieveActiveSessionId();
             db.UpdateSession(ActiveSession, 2, DateTime.Now);
             db.RetrieveAndUpdateSession(ActiveSession);
-
         }
 
         private void StartSession()
@@ -233,7 +232,6 @@
         {
             int input = GetUserInput(sessionMenuChoices, EnterNewSessionMenu);
             NewSessionFunctionSelect(input);
-
         }
 
         private void NewSessionFunctionSelect(int intUserInput)

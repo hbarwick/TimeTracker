@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CodingTracker
+﻿namespace CodingTracker
 {
     internal class DateOperations
     {
+        /// <summary>
+        /// Prompts user for text input and parses to datetime, reprompting if unable to parse.
+        /// </summary>
+        /// <returns>Date portion as string in ShortDateString format: YYYY-MM-DD</returns>
         public static string EnterNewDate()
         {
             Console.Write("\nEnter date: ");
@@ -22,6 +20,10 @@ namespace CodingTracker
             return shortDate;
         }
 
+        /// <summary>
+        /// Prompts user for text input and parses to datetime, reprompting if unable to parse.
+        /// </summary>
+        /// <returns>Time portion as string in ShortTimeString format: HH:MM:SS</returns>
         public static string EnterNewTime()
         {
             Console.Write("\nEnter time: ");
@@ -35,6 +37,7 @@ namespace CodingTracker
             string shortTime = Time.ToShortTimeString();
             return shortTime;
         }
+
 
         public static DateTime ParseDateTime(string date, string time)
         {
