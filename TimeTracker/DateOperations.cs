@@ -1,4 +1,4 @@
-﻿namespace CodingTracker
+﻿namespace TimeTracker
 {
     internal class DateOperations
     {

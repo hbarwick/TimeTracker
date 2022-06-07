@@ -1,7 +1,7 @@
 ﻿using System.Configuration;
 using System.Data.SQLite;
 
-namespace CodingTracker
+namespace TimeTracker
 {
     public class DatabaseManager
     {

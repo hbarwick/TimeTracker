@@ -1,4 +1,4 @@
-﻿using CodingTracker;
+﻿using TimeTracker;
 
 var db = new DatabaseManager();
 db.CreateDatabase();

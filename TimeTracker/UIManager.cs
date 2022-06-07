@@ -1,7 +1,26 @@
-﻿namespace CodingTracker
+﻿using System.Configuration;
+
+namespace TimeTracker
 {
     public class UIManager
     {
+
+        int resultsToDisplay
+        {
+            get
+            {
+                string? config = ConfigurationManager.AppSettings.Get("resultsToDisplay");
+                if(config != null)
+                {
+                    return int.Parse(config);
+                }
+                else
+                {
+                    return 20;
+                }
+            }
+        }
+
         public bool isSessionActive;
         public DatabaseManager db;
         public UIManager(DatabaseManager db)
@@ -228,7 +247,7 @@
 
                 db.UpdateSession(id, updateChoice, dt);
                 db.RetrieveAndUpdateSession(id);
-                Console.Write($"Session {id} updated. Press enter to return to Main Menu. ");
+                Console.Write($"\n\nSession {id} updated to: {dt}\n\nPress enter to return to Main Menu. ");
                 Console.ReadLine();
             }
         }
@@ -239,7 +258,7 @@
         private void DisplayActiveSessions()
         {
             Console.WriteLine("\nSESSION LIST");
-            Reports.DisplayAllRecords(db.RetrieveSessionList(20));
+            Reports.DisplayAllRecords(db.RetrieveSessionList(resultsToDisplay));
             Console.Write("\nEnter Id of session, or 0 to return to Main Menu: ");
         }
 

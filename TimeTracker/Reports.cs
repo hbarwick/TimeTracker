@@ -1,6 +1,6 @@
 ﻿using ConsoleTableExt;
 
-namespace CodingTracker
+namespace TimeTracker
 {
     public class Reports
     {

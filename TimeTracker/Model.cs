@@ -1,4 +1,4 @@
-﻿namespace CodingTracker
+﻿namespace TimeTracker
 {
     /// <summary>
     /// Class <c>Session</c> models a session of time. Supply with DateTime <value name="StartTime"/> and <value name="EndTime"/>,
