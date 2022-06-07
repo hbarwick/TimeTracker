@@ -38,7 +38,12 @@
             return shortTime;
         }
 
-
+        /// <summary>
+        /// Parses date string and time string together into a DateTime object.
+        /// </summary>
+        /// <param name="date">Date string</param>
+        /// <param name="time">Time String</param>
+        /// <returns>DateTime object</returns>
         public static DateTime ParseDateTime(string date, string time)
         {
             string dt = date + " " + time;
@@ -46,6 +51,10 @@
             return parsedDt;
         }
 
+        /// <summary>
+        /// Get todays date as string in format YYYY-MM-DD.
+        /// </summary>
+        /// <returns>date string YYYY-MM-DD</returns>
         public static string GetTodaysDate()
         {
             Console.WriteLine("Getting today's date....");
@@ -54,6 +63,12 @@
             return date;
         }
 
+        /// <summary>
+        /// Returns the first and last date of the month, defaulting to current month
+        /// </summary>
+        /// <param name="current">Optional parameter (default 0), deducts a month. E.G pass 1 to 
+        /// return previos month's start and end date</param>
+        /// <returns>Packaged Tuple of 2xDateTime objects</returns>
         public static (DateTime, DateTime) GetFirstAndLastOfMonth(int current = 0)
         {
             int currentMonth = DateTime.Now.Month - current;

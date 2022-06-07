@@ -9,6 +9,9 @@
             this.db = db;
         }
 
+        /// <summary>
+        /// Main program loop, displays main menu and asks for input until option 0 selected.
+        /// </summary>
         public void MenuLoop()
         {
             int UserInput = 1;
@@ -176,58 +179,6 @@
                     break;
             }
         }
-
-        private void DeleteSession()
-        {
-            int id = GetUserInput(db.GetArrayOfIdsAsStrings(), DisplayActiveSessions);
-            if (id != 0)
-            {
-                db.DeleteSession(id);
-                Console.Write($"Session {id} deleted. Press enter to return to Main Menu. ");
-                Console.ReadLine();
-            }
-        }
-
-        private void UpdateSession()
-        {
-            int id = GetUserInput(db.GetArrayOfIdsAsStrings(), DisplayActiveSessions);
-            if (id != 0)
-            {
-                int updateChoice = GetUserInput(sessionMenuChoices, UpdateSessionMenu);
-                string date = DateOperations.EnterNewDate();
-                string time = DateOperations.EnterNewTime();
-                DateTime dt = DateOperations.ParseDateTime(date, time);
-
-                db.UpdateSession(id, updateChoice, dt);
-                db.RetrieveAndUpdateSession(id);
-                Console.Write($"Session {id} updated. Press enter to return to Main Menu. ");
-                Console.ReadLine();
-            }
-        }
-
-        private void DisplayActiveSessions()
-        {
-            Console.WriteLine("\nSESSION LIST");
-            Reports.DisplayAllRecords(db.RetrieveSessionList(20));
-            Console.Write("\nEnter Id of session, or 0 to return to Main Menu: ");
-        }
-
-        private void EndSession()
-        {
-            db.ToggleActiveSession();
-            int ActiveSession = db.RetrieveActiveSessionId();
-            db.UpdateSession(ActiveSession, 2, DateTime.Now);
-            db.RetrieveAndUpdateSession(ActiveSession);
-        }
-
-        private void StartSession()
-        {
-            Session newSession = new();
-            newSession.StartTime = DateTime.Now;
-            db.WriteSessionToDatabase(newSession);
-            db.ToggleActiveSession();
-        }
-
         private void EnterNewSession()
         {
             int input = GetUserInput(sessionMenuChoices, EnterNewSessionMenu);
@@ -247,6 +198,71 @@
                     BuildNewSession(DateOperations.EnterNewDate);
                     break;
             }
+        }
+        /// <summary>
+        /// Gives user choice of sessions, then passes to db method to delete.
+        /// </summary>
+        private void DeleteSession()
+        {
+            int id = GetUserInput(db.GetArrayOfIdsAsStrings(), DisplayActiveSessions);
+            if (id != 0)
+            {
+                db.DeleteSession(id);
+                Console.Write($"Session {id} deleted. Press enter to return to Main Menu. ");
+                Console.ReadLine();
+            }
+        }
+        /// <summary>
+        /// Gives user choice of sessions to update,
+        /// then retrieves date/time from the user and passes to method to update db.
+        /// </summary>
+        private void UpdateSession()
+        {
+            int id = GetUserInput(db.GetArrayOfIdsAsStrings(), DisplayActiveSessions);
+            if (id != 0)
+            {
+                int updateChoice = GetUserInput(sessionMenuChoices, UpdateSessionMenu);
+                string date = DateOperations.EnterNewDate();
+                string time = DateOperations.EnterNewTime();
+                DateTime dt = DateOperations.ParseDateTime(date, time);
+
+                db.UpdateSession(id, updateChoice, dt);
+                db.RetrieveAndUpdateSession(id);
+                Console.Write($"Session {id} updated. Press enter to return to Main Menu. ");
+                Console.ReadLine();
+            }
+        }
+
+        /// <summary>
+        /// Queries the database for the most recent 20 results and displays to screen.
+        /// </summary>
+        private void DisplayActiveSessions()
+        {
+            Console.WriteLine("\nSESSION LIST");
+            Reports.DisplayAllRecords(db.RetrieveSessionList(20));
+            Console.Write("\nEnter Id of session, or 0 to return to Main Menu: ");
+        }
+
+        /// <summary>
+        /// Activated on "Clock On" Creates a new session with current date/time start and NULL end time.
+        /// </summary>
+        private void StartSession()
+        {
+            Session newSession = new();
+            newSession.StartTime = DateTime.Now;
+            db.WriteSessionToDatabase(newSession);
+            db.ToggleActiveSession();
+        }
+
+        /// <summary>
+        /// Updates the endTime of the currently active session to the current date/time.
+        /// </summary>
+        private void EndSession()
+        {
+            db.ToggleActiveSession();
+            int ActiveSession = db.RetrieveActiveSessionId();
+            db.UpdateSession(ActiveSession, 2, DateTime.Now);
+            db.RetrieveAndUpdateSession(ActiveSession);
         }
 
         /// <summary>

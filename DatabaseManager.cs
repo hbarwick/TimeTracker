@@ -5,9 +5,12 @@ namespace CodingTracker
 {
     public class DatabaseManager
     {
+
         string? ConnectionString = ConfigurationManager.AppSettings.Get("connectionString");
 
-
+        /// <summary>
+        /// Called on application start. Creates database and tables if not already existing.
+        /// </summary>
         public void CreateDatabase()
         {
             using (var connection = new SQLiteConnection(ConnectionString))
@@ -42,6 +45,10 @@ namespace CodingTracker
             }
         }
 
+        /// <summary>
+        /// Checks the ActiveSession table for flag of whether or not there is an active session.
+        /// </summary>
+        /// <returns>Bool - True if active session, else false</returns>
         public bool CheckForActiveSession()
         {
             using (var connection = new SQLiteConnection(ConnectionString))
@@ -61,6 +68,9 @@ namespace CodingTracker
             }
         }
 
+        /// <summary>
+        /// Toggles the active session flag in ActiveSession table.
+        /// </summary>
         public void ToggleActiveSession()
         {
             int ValueToUpdate = 1;
@@ -82,6 +92,10 @@ namespace CodingTracker
             }
         }
 
+        /// <summary>
+        /// Writes StartTime, EndTime & Duration of supplied <paramref name="session"/> to the database.
+        /// </summary>
+        /// <param name="session"></param>
         public void WriteSessionToDatabase(Session session)
         {
             using (var connection = new SQLiteConnection(ConnectionString))
